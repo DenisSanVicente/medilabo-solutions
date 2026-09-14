@@ -1,5 +1,6 @@
 package com.medilabo.patient_service.service;
 
+import com.medilabo.patient_service.exception.PatientNotFoundException;
 import com.medilabo.patient_service.model.Patient;
 import com.medilabo.patient_service.repository.PatientRepository;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,11 @@ public class PatientService {
         return patientRepository.findAll();
     }
 
-    public Optional<Patient> findPatientById(Long id) {
-        return patientRepository.findById(id);
+    public Patient findPatientById(Long id) {
+        return patientRepository.findById(id)
+                .orElseThrow(() -> new PatientNotFoundException(
+                        "Le patient " + id + " n'existe pas dans la base de données"
+                ));
     }
 
     public Patient addPatient(Patient patient) {
@@ -31,7 +35,7 @@ public class PatientService {
     public Patient updatePatient(Long id, Patient patient) {
 
         Patient patientToUpdate = patientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new PatientNotFoundException(
                         "Le patient " + id + " n'existe pas dans la base de données"
                 ));
 
