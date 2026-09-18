@@ -18,7 +18,7 @@ public class Patient {
     @NotBlank(message = "Le nom est obligatoire")
     private String lastName;
 
-    @NotBlank(message = "Le prénom est oblgatoire")
+    @NotBlank(message = "Le prénom est obligatoire")
     private String firstName;
 
     @NotNull(message = "La date de naissance est obligatoire")
