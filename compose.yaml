@@ -9,6 +9,8 @@ services:
       MYSQL_ROOT_PASSWORD: rootroot
     ports:
       - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootroot" ]
       interval: 10s
@@ -48,3 +50,6 @@ services:
       - "8081:8081"
     depends_on:
       - gateway-service
+
+volumes:
+  mysql-data:
