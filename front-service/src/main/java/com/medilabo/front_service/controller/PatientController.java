@@ -1,6 +1,8 @@
 package com.medilabo.front_service.controller;
 
+import com.medilabo.front_service.model.Note;
 import com.medilabo.front_service.model.Patient;
+import com.medilabo.front_service.service.NoteService;
 import com.medilabo.front_service.service.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -11,14 +13,20 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.List;
+
 @Controller
 public class PatientController {
 
     private final PatientService patientService;
+    private final NoteService noteService;
 
-    public PatientController(PatientService patientService) {
+    public PatientController(PatientService patientService, NoteService noteService) {
+
         this.patientService = patientService;
+        this.noteService = noteService;
     }
+
 
     @GetMapping("/patients")
     public String getPatients(Model model) {
@@ -50,11 +58,14 @@ public class PatientController {
     public String showUpdatePatientForm(@PathVariable Long id, Model model) {
 
         Patient patient = patientService.getPatientById(id);
+        List<Note> notes = noteService.getNotesByPatientId(id);
 
         model.addAttribute("patient", patient);
+        model.addAttribute("notes", notes);
 
         return "patient-edit";
     }
+
 
     @PostMapping("/patients/edit/{id}")
     public String updatePatient(

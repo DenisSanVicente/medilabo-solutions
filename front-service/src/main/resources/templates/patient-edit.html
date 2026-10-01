@@ -54,6 +54,11 @@
 
 </form>
 
+<h2>Notes du patient</h2>
+<div th:each="note : ${notes}">
+    <p th:text="${note.note}"></p>
+</div>
+
 <a th:href="@{/patients}">Retour à la liste des patients</a>
 
 </body>
