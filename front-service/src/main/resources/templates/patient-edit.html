@@ -55,9 +55,31 @@
 </form>
 
 <h2>Notes du patient</h2>
+
 <div th:each="note : ${notes}">
-    <p th:text="${note.note}"></p>
+    <p th:text="${note.note}"
+       style="white-space: pre-wrap;"></p>
 </div>
+
+
+<h3>Ajouter une note</h3>
+
+<form th:action="@{/patients/{id}/notes(id=${patient.id})}"
+      th:object="${newNote}"
+      method="post">
+
+    <div>
+        <label for="note">Note :</label>
+        <textarea id="note"
+                  th:field="*{note}"
+                  rows="5"
+                  cols="50"></textarea>
+    </div>
+
+    <button type="submit">Ajouter la note</button>
+
+</form>
+
 
 <a th:href="@{/patients}">Retour à la liste des patients</a>
 

@@ -62,6 +62,7 @@ public class PatientController {
 
         model.addAttribute("patient", patient);
         model.addAttribute("notes", notes);
+        model.addAttribute("newNote", new Note());
 
         return "patient-edit";
     }
@@ -80,5 +81,20 @@ public class PatientController {
         patientService.updatePatient(id, patient);
 
         return "redirect:/patients";
+    }
+
+    @PostMapping("/patients/{id}/notes")
+    public String addNote(
+            @PathVariable Long id,
+            @ModelAttribute("newNote") Note note) {
+
+        Patient patient = patientService.getPatientById(id);
+
+        note.setPatId(patient.getId());
+        note.setPatient(patient.getLastName());
+
+        noteService.addNote(note);
+
+        return "redirect:/patients/edit/" + id;
     }
 }

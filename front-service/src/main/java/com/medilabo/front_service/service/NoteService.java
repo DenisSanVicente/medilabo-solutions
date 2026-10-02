@@ -32,4 +32,12 @@ public class NoteService {
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<Note>>() {});
     }
+
+    public Note addNote(Note note) {
+        return restClient.post()
+                .uri("/notes")
+                .body(note)
+                .retrieve()
+                .body(Note.class);
+    }
 }
