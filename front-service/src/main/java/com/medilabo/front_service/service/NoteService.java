@@ -40,4 +40,12 @@ public class NoteService {
                 .retrieve()
                 .body(Note.class);
     }
+
+    public Note updateNote(String id, Note note) {
+        return restClient.put()
+                .uri("/notes/{id}", id)
+                .body(note)
+                .retrieve()
+                .body(Note.class);
+    }
 }

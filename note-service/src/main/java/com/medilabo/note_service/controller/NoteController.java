@@ -26,7 +26,10 @@ public class NoteController {
         return noteService.addNote(note);
     }
 
-
-
+    @PutMapping("/{id}")
+    public Note updateNote(@PathVariable String id,
+                           @RequestBody Note note) {
+        return noteService.updateNote(id, note);
+    }
 
 }

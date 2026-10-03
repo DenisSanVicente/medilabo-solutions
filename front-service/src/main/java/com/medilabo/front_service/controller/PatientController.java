@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -96,5 +93,21 @@ public class PatientController {
         noteService.addNote(note);
 
         return "redirect:/patients/edit/" + id;
+    }
+
+    @PostMapping("/patients/{patientId}/notes/{noteId}/edit")
+    public String updateNote(
+            @PathVariable Long patientId,
+            @PathVariable String noteId,
+            @ModelAttribute Note note) {
+
+        Patient patient = patientService.getPatientById(patientId);
+
+        note.setPatId(patientId);
+        note.setPatient(patient.getLastName());
+
+        noteService.updateNote(noteId, note);
+
+        return "redirect:/patients/edit/" + patientId;
     }
 }
