@@ -14,9 +14,4 @@ public enum RiskLevel {
     RiskLevel(String label) {
         this.label = label;
     }
-
-    @JsonValue
-    public String getLabel() {
-        return label;
-    }
 }

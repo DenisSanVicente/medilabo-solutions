@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.core.ParameterizedTypeReference;
 
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class AssessmentService {
@@ -70,15 +72,37 @@ public class AssessmentService {
         int triggerTermsCount = 0;
 
         for (NoteDTO note : notes) {
-            String noteText = note.getNote().toLowerCase();
+
+            if (note.getNote() == null) {
+                continue;
+            }
+
+            String noteText = normalize(note.getNote());
 
             for (String term : TRIGGER_TERMS) {
-                if (noteText.contains(term)) {
+
+                String normalizedTerm = normalize(term);
+
+                Pattern pattern = Pattern.compile(
+                        "\\b" + Pattern.quote(normalizedTerm) + "\\b"
+                );
+
+                if (pattern.matcher(noteText).find()) {
                     triggerTermsCount++;
                 }
             }
         }
+
         return triggerTermsCount;
+    }
+
+    private String normalize(String text) {
+
+        String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
+
+        return normalized
+                .replaceAll("\\p{M}", "")
+                .toLowerCase(java.util.Locale.ROOT);
     }
 
     private int calculateAge(LocalDate birth) {
