@@ -38,4 +38,16 @@ public class GatewayRoutesConfig {
                 .filter(serviceAuthFilter.basicAuth())
                 .build();
     }
+
+    @Bean
+    public RouterFunction<ServerResponse> assessmentRoute(
+            ServiceAuthFilter serviceAuthFilter,
+            @Value("${ASSESSMENT_SERVICE_URL:http://localhost:8084}") String assessmentServiceUrl) {
+
+        return route("assessment-service")
+                .route(path("/assessments/**"), http())
+                .before(uri(assessmentServiceUrl))
+                .filter(serviceAuthFilter.basicAuth())
+                .build();
+    }
 }
