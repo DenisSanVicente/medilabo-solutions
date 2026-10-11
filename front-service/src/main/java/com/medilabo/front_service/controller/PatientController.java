@@ -1,7 +1,9 @@
 package com.medilabo.front_service.controller;
 
+import com.medilabo.front_service.model.Assessment;
 import com.medilabo.front_service.model.Note;
 import com.medilabo.front_service.model.Patient;
+import com.medilabo.front_service.service.AssessmentService;
 import com.medilabo.front_service.service.NoteService;
 import com.medilabo.front_service.service.PatientService;
 import jakarta.validation.Valid;
@@ -17,11 +19,16 @@ public class PatientController {
 
     private final PatientService patientService;
     private final NoteService noteService;
+    private final AssessmentService assessmentService;
 
-    public PatientController(PatientService patientService, NoteService noteService) {
+    public PatientController(
+            PatientService patientService,
+            NoteService noteService,
+            AssessmentService assessmentService) {
 
         this.patientService = patientService;
         this.noteService = noteService;
+        this.assessmentService = assessmentService;
     }
 
 
@@ -57,9 +64,12 @@ public class PatientController {
         Patient patient = patientService.getPatientById(id);
         List<Note> notes = noteService.getNotesByPatientId(id);
 
+        Assessment assessment = assessmentService.getPatientRisk(id);
+
         model.addAttribute("patient", patient);
         model.addAttribute("notes", notes);
         model.addAttribute("newNote", new Note());
+        model.addAttribute("assessment", assessment);
 
         return "patient-edit";
     }

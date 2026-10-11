@@ -13,22 +13,24 @@ import java.util.List;
 public class NoteService {
 
     private final RestClient restClient;
+    private final GatewayTokenService gatewayTokenService;
 
     public NoteService(
             @Value("${gateway.url}") String gatewayUrl,
-            @Value("${gateway.username}") String username,
-            @Value("${gateway.password}") String password) {
+            GatewayTokenService gatewayTokenService) {
 
         this.restClient = RestClient.builder()
                 .baseUrl(gatewayUrl)
-                .defaultHeaders(headers -> headers.setBasicAuth(username, password))
                 .build();
+
+        this.gatewayTokenService = gatewayTokenService;
     }
 
 
     public List<Note> getNotesByPatientId(Long patId) {
         return restClient.get()
                 .uri("/notes/patient/{patId}", patId)
+                .header("Authorization", "Bearer " + gatewayTokenService.getToken())
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<Note>>() {});
     }
@@ -37,6 +39,7 @@ public class NoteService {
         return restClient.post()
                 .uri("/notes")
                 .body(note)
+                .header("Authorization", "Bearer " + gatewayTokenService.getToken())
                 .retrieve()
                 .body(Note.class);
     }
@@ -45,6 +48,7 @@ public class NoteService {
         return restClient.put()
                 .uri("/notes/{id}", id)
                 .body(note)
+                .header("Authorization", "Bearer " + gatewayTokenService.getToken())
                 .retrieve()
                 .body(Note.class);
     }

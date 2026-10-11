@@ -1,0 +1,380 @@
+/* ==========================================
+   MEDILABO SOLUTIONS
+   Feuille de style principale
+   ========================================== */
+
+
+/* ==========================================
+   STYLE GÉNÉRAL
+   ========================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: #f3f6fa;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #263445;
+    line-height: 1.5;
+}
+
+
+/* ==========================================
+   EN-TÊTE
+   ========================================== */
+
+header {
+    background-color: #1e3a5f;
+    color: white;
+    padding: 20px 40px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   CONTENU PRINCIPAL
+   ========================================== */
+
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+}
+
+h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: #1e3a5f;
+    font-size: 22px;
+}
+
+h3 {
+    color: #1e3a5f;
+    margin-top: 0;
+}
+
+.section-description {
+    color: #64748b;
+    font-size: 14px;
+    margin-top: -10px;
+    margin-bottom: 25px;
+}
+
+
+/* ==========================================
+   TABLEAUX
+   ========================================== */
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background-color: #edf3f9;
+    color: #1e3a5f;
+    font-weight: 600;
+    text-align: left;
+    padding: 14px;
+}
+
+td {
+    padding: 14px;
+    border-bottom: 1px solid #e5eaf0;
+}
+
+tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+
+/* ==========================================
+   FORMULAIRES
+   ========================================== */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    background-color: white;
+    color: #263445;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0 25px;
+}
+
+
+/* ==========================================
+   BOUTONS
+   ========================================== */
+
+.btn {
+    display: inline-block;
+    background-color: #2563eb;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 6px;
+    border: none;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-secondary {
+    background-color: #64748b;
+}
+
+.btn-secondary:hover {
+    background-color: #475569;
+}
+
+.btn-small {
+    padding: 7px 12px;
+    font-size: 13px;
+}
+
+
+/* ==========================================
+   NAVIGATION
+   ========================================== */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.page-header h2 {
+    margin: 0;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 5px;
+    margin-bottom: 30px;
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+
+/* ==========================================
+   NOTES MÉDICALES
+   ========================================== */
+
+.note-card {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.note-card:last-child {
+    margin-bottom: 0;
+}
+
+.empty-message {
+    background-color: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    padding: 20px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+
+/* ==========================================
+   ÉVALUATION DU RISQUE
+   ========================================== */
+
+.risk-box {
+    padding: 22px 25px;
+    border-radius: 8px;
+    border-left: 5px solid;
+}
+
+.risk-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.risk-label {
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.risk-value {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+
+/* AUCUN RISQUE */
+
+.risk-box.NONE {
+    background-color: #dcfce7;
+    color: #166534;
+    border-color: #22c55e;
+}
+
+
+/* RISQUE LIMITÉ */
+
+.risk-box.BORDERLINE {
+    background-color: #fef9c3;
+    color: #854d0e;
+    border-color: #eab308;
+}
+
+
+/* DANGER */
+
+.risk-box.IN_DANGER {
+    background-color: #ffedd5;
+    color: #9a3412;
+    border-color: #f97316;
+}
+
+
+/* APPARITION PRÉCOCE */
+
+.risk-box.EARLY_ONSET {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-color: #ef4444;
+}
+
+
+/* RISQUE INDISPONIBLE */
+
+.risk-unavailable {
+    background-color: #f1f5f9;
+    color: #64748b;
+    border-left: 5px solid #94a3b8;
+    border-radius: 8px;
+    padding: 20px;
+    font-size: 14px;
+}
+
+
+/* ==========================================
+   ERREURS DE VALIDATION
+   ========================================== */
+
+.error {
+    display: block;
+    color: #dc2626;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 700px) {
+
+    header {
+        padding: 18px 20px;
+    }
+
+    header h1 {
+        font-size: 21px;
+    }
+
+    .container {
+        margin: 20px auto;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .risk-box {
+        padding: 18px;
+    }
+
+    .risk-value {
+        font-size: 18px;
+    }
+}

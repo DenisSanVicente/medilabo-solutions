@@ -1,103 +1,266 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+
 <head>
     <meta charset="UTF-8">
-    <title>Modifier un patient</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dossier patient - Medilabo Solutions</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
+
 <body>
 
-<h1>Modifier un patient</h1>
+<!-- EN-TÊTE -->
 
-<form th:action="@{/patients/edit/{id}(id=${patient.id})}"
-      th:object="${patient}"
-      method="post">
+<header>
+    <h1>Medilabo Solutions</h1>
+</header>
 
-    <div>
-        <label for="firstName">Prénom :</label>
-        <input type="text" id="firstName" th:field="*{firstName}">
-        <span th:if="${#fields.hasErrors('firstName')}"
-              th:errors="*{firstName}"></span>
-    </div>
+<main class="container">
 
-    <div>
-        <label for="lastName">Nom :</label>
-        <input type="text" id="lastName" th:field="*{lastName}">
-        <span th:if="${#fields.hasErrors('lastName')}"
-              th:errors="*{lastName}"></span>
-    </div>
+    <!-- INFORMATIONS DU PATIENT -->
 
-    <div>
-        <label for="birth">Date de naissance :</label>
-        <input type="date" id="birth" th:field="*{birth}">
-        <span th:if="${#fields.hasErrors('birth')}"
-              th:errors="*{birth}"></span>
-    </div>
+    <section class="card">
 
-    <div>
-        <label for="gender">Genre :</label>
-        <input type="text" id="gender" th:field="*{gender}">
-        <span th:if="${#fields.hasErrors('gender')}"
-              th:errors="*{gender}"></span>
-    </div>
+        <h2>Dossier patient</h2>
 
-    <div>
-        <label for="address">Adresse :</label>
-        <input type="text" id="address" th:field="*{address}">
-    </div>
+        <form th:action="@{/patients/edit/{id}(id=${patient.id})}"
+              th:object="${patient}"
+              method="post">
 
-    <div>
-        <label for="phone">Téléphone :</label>
-        <input type="text" id="phone" th:field="*{phone}">
-    </div>
+            <div class="form-grid">
 
-    <button type="submit">Modifier</button>
+                <div class="form-group">
+                    <label for="firstName">Prénom</label>
 
-</form>
+                    <input type="text"
+                           id="firstName"
+                           th:field="*{firstName}">
 
-<h2>Notes du patient</h2>
+                    <span class="error"
+                          th:if="${#fields.hasErrors('firstName')}"
+                          th:errors="*{firstName}"></span>
+                </div>
 
-<div th:each="note : ${notes}">
+                <div class="form-group">
+                    <label for="lastName">Nom</label>
 
-    <form th:action="@{/patients/{patientId}/notes/{noteId}/edit(
-              patientId=${patient.id},
-              noteId=${note.id}
-          )}"
-          method="post">
+                    <input type="text"
+                           id="lastName"
+                           th:field="*{lastName}">
 
-        <div>
-            <textarea name="note"
-                      rows="5"
-                      cols="50"
-                      th:text="${note.note}"></textarea>
+                    <span class="error"
+                          th:if="${#fields.hasErrors('lastName')}"
+                          th:errors="*{lastName}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="birth">Date de naissance</label>
+
+                    <input type="date"
+                           id="birth"
+                           th:field="*{birth}">
+
+                    <span class="error"
+                          th:if="${#fields.hasErrors('birth')}"
+                          th:errors="*{birth}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">Genre</label>
+
+                    <input type="text"
+                           id="gender"
+                           th:field="*{gender}">
+
+                    <span class="error"
+                          th:if="${#fields.hasErrors('gender')}"
+                          th:errors="*{gender}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Adresse</label>
+
+                    <input type="text"
+                           id="address"
+                           th:field="*{address}">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Téléphone</label>
+
+                    <input type="text"
+                           id="phone"
+                           th:field="*{phone}">
+                </div>
+
+            </div>
+
+            <button class="btn" type="submit">
+                Enregistrer les modifications
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- ÉVALUATION DU RISQUE DE DIABÈTE -->
+
+    <section class="card">
+
+        <h2>Évaluation du risque de diabète</h2>
+
+        <p class="section-description">
+            Niveau de risque calculé à partir des informations
+            du patient et de ses notes médicales.
+        </p>
+
+        <div th:if="${assessment != null}"
+             class="risk-box"
+             th:classappend="${assessment.risk}">
+
+            <div class="risk-content">
+
+                <span class="risk-label">
+                    Niveau de risque
+                </span>
+
+                <span class="risk-value"
+                      th:switch="${assessment.risk}">
+
+                    <strong th:case="'NONE'">
+                        Aucun risque
+                    </strong>
+
+                    <strong th:case="'BORDERLINE'">
+                        Risque limité
+                    </strong>
+
+                    <strong th:case="'IN_DANGER'">
+                        Danger
+                    </strong>
+
+                    <strong th:case="'EARLY_ONSET'">
+                        Apparition précoce
+                    </strong>
+
+                    <strong th:case="*">
+                        Niveau de risque inconnu
+                    </strong>
+
+                </span>
+
+            </div>
+
         </div>
 
-        <button type="submit">Modifier la note</button>
+        <div th:if="${assessment == null}"
+             class="risk-unavailable">
 
-    </form>
+            Évaluation du risque indisponible.
 
-</div>
+        </div>
 
-
-<h3>Ajouter une note</h3>
-
-<form th:action="@{/patients/{id}/notes(id=${patient.id})}"
-      th:object="${newNote}"
-      method="post">
-
-    <div>
-        <label for="note">Note :</label>
-        <textarea id="note"
-                  th:field="*{note}"
-                  rows="5"
-                  cols="50"></textarea>
-    </div>
-
-    <button type="submit">Ajouter la note</button>
-
-</form>
+    </section>
 
 
-<a th:href="@{/patients}">Retour à la liste des patients</a>
+    <!-- NOTES MÉDICALES EXISTANTES -->
+
+    <section class="card">
+
+        <h2>Notes médicales</h2>
+
+        <div th:if="${#lists.isEmpty(notes)}"
+             class="empty-message">
+
+            Aucune note médicale enregistrée pour ce patient.
+
+        </div>
+
+        <div th:each="note : ${notes}"
+             class="note-card">
+
+            <form th:action="@{/patients/{patientId}/notes/{noteId}/edit(
+                    patientId=${patient.id},
+                    noteId=${note.id}
+                )}"
+                  method="post">
+
+                <div class="form-group">
+
+                    <label th:for="${'note-' + note.id}">
+                        Note médicale
+                    </label>
+
+                    <textarea th:id="${'note-' + note.id}"
+                              name="note"
+                              rows="5"
+                              th:text="${note.note}"></textarea>
+
+                </div>
+
+                <button class="btn btn-small"
+                        type="submit">
+
+                    Enregistrer la note
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </section>
+
+
+    <!-- AJOUTER UNE NOTE MÉDICALE -->
+
+    <section class="card">
+
+        <h2>Ajouter une note médicale</h2>
+
+        <form th:action="@{/patients/{id}/notes(id=${patient.id})}"
+              th:object="${newNote}"
+              method="post">
+
+            <div class="form-group">
+
+                <label for="note">
+                    Nouvelle note
+                </label>
+
+                <textarea id="note"
+                          th:field="*{note}"
+                          rows="5"
+                          placeholder="Saisissez une nouvelle note médicale..."></textarea>
+
+            </div>
+
+            <button class="btn"
+                    type="submit">
+
+                Ajouter la note
+
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- RETOUR -->
+
+    <a class="back-link"
+       th:href="@{/patients}">
+
+        ← Retour à la liste des patients
+
+    </a>
+
+</main>
 
 </body>
 </html>

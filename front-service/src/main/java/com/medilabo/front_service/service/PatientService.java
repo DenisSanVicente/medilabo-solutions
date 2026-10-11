@@ -12,21 +12,23 @@ import java.util.List;
 public class PatientService {
 
     private final RestClient restClient;
+    private final GatewayTokenService gatewayTokenService;
 
     public PatientService(
             @Value("${gateway.url}") String gatewayUrl,
-            @Value("${gateway.username}") String username,
-            @Value("${gateway.password}") String password) {
+            GatewayTokenService gatewayTokenService) {
 
         this.restClient = RestClient.builder()
                 .baseUrl(gatewayUrl)
-                .defaultHeaders(headers -> headers.setBasicAuth(username, password))
                 .build();
+
+        this.gatewayTokenService = gatewayTokenService;
     }
 
     public List<Patient> getPatients() {
         return restClient.get()
                 .uri("/patients")
+                .header("Authorization", "Bearer " + gatewayTokenService.getToken())
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<Patient>>() {});
     }
@@ -35,6 +37,7 @@ public class PatientService {
         return restClient.post()
                 .uri("/patients")
                 .body(patient)
+                .header("Authorization", "Bearer " + gatewayTokenService.getToken())
                 .retrieve()
                 .body(Patient.class);
     }
@@ -42,6 +45,7 @@ public class PatientService {
     public Patient getPatientById(Long id) {
         return restClient.get()
                 .uri("/patients/{id}", id)
+                .header("Authorization", "Bearer " + gatewayTokenService.getToken())
                 .retrieve()
                 .body(Patient.class);
     }
@@ -50,6 +54,7 @@ public class PatientService {
         return restClient.put()
                 .uri("/patients/{id}", id)
                 .body(patient)
+                .header("Authorization", "Bearer " + gatewayTokenService.getToken())
                 .retrieve()
                 .body(Patient.class);
     }
