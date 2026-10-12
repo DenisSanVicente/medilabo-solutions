@@ -21,18 +21,17 @@ public class AssessmentService {
     private final RestClient patientRestClient;
     private final RestClient noteRestClient;
 
-    private static final List<String> TRIGGER_TERMS = List.of(
-            "hémoglobine a1c",
+    private static final List<String> TRIGGER_PATTERNS = List.of(
+            "hemoglobine a1c",
             "microalbumine",
             "taille",
             "poids",
-            "fumeur",
-            "fumeuse",
-            "anormal",
-            "cholestérol",
-            "vertiges",
+            "fum(?:e|es|ent|eur|euse)",
+            "(?:anormal(?:e|es|s)?|anormaux)",
+            "cholesterol",
+            "vertiges?",
             "rechute",
-            "réaction",
+            "reactions?",
             "anticorps"
     );
 
@@ -79,12 +78,10 @@ public class AssessmentService {
 
             String noteText = normalize(note.getNote());
 
-            for (String term : TRIGGER_TERMS) {
-
-                String normalizedTerm = normalize(term);
+            for (String termPattern : TRIGGER_PATTERNS) {
 
                 Pattern pattern = Pattern.compile(
-                        "\\b" + Pattern.quote(normalizedTerm) + "\\b"
+                        "\\b(?:" + termPattern + ")\\b"
                 );
 
                 if (pattern.matcher(noteText).find()) {

@@ -1,5 +1,9 @@
 services:
 
+  # ==========================================
+  # BASE DE DONNÉES MYSQL
+  # ==========================================
+
   mysql:
     image: mysql:8.0
     environment:
@@ -12,24 +16,32 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootroot" ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootroot"]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 120s
 
-      mongodb:
-        image: mongo:7
-        ports:
-          - "27018:27017"
-        volumes:
-          - mongo-data:/data/db
-        healthcheck:
-          test: [ "CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok" ]
-          interval: 10s
-          timeout: 5s
-          retries: 10
-          start_period: 30s
+  # ==========================================
+  # BASE DE DONNÉES MONGODB
+  # ==========================================
+
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # ==========================================
+  # PATIENT SERVICE
+  # ==========================================
 
   patient-service:
     build:
@@ -44,6 +56,10 @@ services:
       mysql:
         condition: service_healthy
 
+  # ==========================================
+  # NOTE SERVICE
+  # ==========================================
+
   note-service:
     build:
       context: ./note-service
@@ -54,6 +70,28 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+
+  # ==========================================
+  # ASSESSMENT SERVICE
+  # ==========================================
+
+  assessment-service:
+    build:
+      context: ./assessment-service
+    environment:
+      PATIENT_SERVICE_URL: http://patient-service:8082
+      NOTE_SERVICE_URL: http://note-service:8083
+      SERVICE_USERNAME: user
+      SERVICE_PASSWORD: password
+    ports:
+      - "8084:8084"
+    depends_on:
+      - patient-service
+      - note-service
+
+  # ==========================================
+  # GATEWAY SERVICE
+  # ==========================================
 
   gateway-service:
     build:
@@ -80,6 +118,10 @@ services:
       - note-service
       - assessment-service
 
+  # ==========================================
+  # FRONT SERVICE
+  # ==========================================
+
   front-service:
     build:
       context: ./front-service
@@ -90,19 +132,9 @@ services:
     depends_on:
       - gateway-service
 
-  assessment-service:
-    build:
-      context: ./assessment-service
-    environment:
-      PATIENT_SERVICE_URL: http://patient-service:8082
-      NOTE_SERVICE_URL: http://note-service:8083
-      SERVICE_USERNAME: user
-      SERVICE_PASSWORD: password
-    ports:
-      - "8084:8084"
-    depends_on:
-      - patient-service
-      - note-service
+# ==========================================
+# VOLUMES PERSISTANTS
+# ==========================================
 
 volumes:
   mysql-data:

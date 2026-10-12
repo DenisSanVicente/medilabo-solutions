@@ -210,4 +210,141 @@ class AssessmentServiceTest {
 
         assertEquals(RiskLevel.BORDERLINE, result.getRisk());
     }
+
+
+    @ParameterizedTest
+    @CsvSource({
+            "anormale, réaction",
+            "anormales, réaction",
+            "anormal, réaction",
+            "anormaux, réaction",
+            "fumeur, cholestérol",
+            "fumeuse, cholestérol",
+            "fume, cholestérol",
+            "vertige, réaction",
+            "vertiges, réaction"
+    })
+    void shouldRecognizeTriggerTermVariations(
+            String firstTerm,
+            String secondTerm) {
+
+        Long patId = 1L;
+
+        PatientDTO patient = new PatientDTO();
+        patient.setBirth(LocalDate.of(1980, 1, 1));
+        patient.setGender("M");
+
+        NoteDTO note = new NoteDTO();
+        note.setNote(firstTerm + " " + secondTerm);
+
+        doReturn(patient)
+                .when(assessmentService)
+                .getPatient(patId);
+
+        doReturn(List.of(note))
+                .when(assessmentService)
+                .getNotesByPatientId(patId);
+
+        Assessment result = assessmentService.assessPatient(patId);
+
+        assertEquals(RiskLevel.BORDERLINE, result.getRisk());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, 1966-12-31, F, NONE",
+            "2, 1945-06-24, M, BORDERLINE",
+            "3, 2004-06-18, M, IN_DANGER",
+            "4, 2002-06-28, F, EARLY_ONSET"
+    })
+    void shouldReturnExpectedRiskForOfficialPatients(
+            Long patId,
+            LocalDate birth,
+            String gender,
+            RiskLevel expectedRisk) {
+
+        PatientDTO patient = new PatientDTO();
+        patient.setBirth(birth);
+        patient.setGender(gender);
+
+        List<NoteDTO> notes = switch (patId.intValue()) {
+
+            case 1 -> List.of(
+                    createNote("Le patient déclare qu'il se sent très bien. " +
+                            "Poids égal ou inférieur au poids recommandé.")
+            );
+
+            case 2 -> List.of(
+                    createNote("Le patient déclare qu'il ressent beaucoup de stress au travail. " +
+                            "Il se plaint également que son audition est anormale dernièrement."),
+                    createNote("Le patient déclare avoir fait une réaction aux médicaments. " +
+                            "Il remarque également que son audition continue d'être anormale.")
+            );
+
+            case 3 -> List.of(
+                    createNote("Le patient déclare qu'il fume depuis peu."),
+                    createNote("Le patient déclare qu'il est fumeur. " +
+                            "Il se plaint également de crises d'apnée respiratoire anormales. " +
+                            "Tests de laboratoire indiquant un taux de cholestérol LDL élevé.")
+            );
+
+            case 4 -> List.of(
+                    createNote("Le patient déclare qu'il lui est devenu difficile de monter les escaliers. " +
+                            "Tests de laboratoire indiquant que les anticorps sont élevés. " +
+                            "Réaction aux médicaments."),
+                    createNote("Le patient déclare qu'il a mal au dos."),
+                    createNote("Le patient déclare avoir commencé à fumer depuis peu. " +
+                            "Hémoglobine A1C supérieure au niveau recommandé."),
+                    createNote("Taille, Poids, Cholestérol, Vertige et Réaction.")
+            );
+
+            default -> throw new IllegalArgumentException("Patient inconnu");
+        };
+
+        doReturn(patient)
+                .when(assessmentService)
+                .getPatient(patId);
+
+        doReturn(notes)
+                .when(assessmentService)
+                .getNotesByPatientId(patId);
+
+        Assessment result = assessmentService.assessPatient(patId);
+
+        assertEquals(expectedRisk, result.getRisk());
+    }
+
+    private NoteDTO createNote(String text) {
+
+        NoteDTO note = new NoteDTO();
+        note.setNote(text);
+
+        return note;
+    }
+
+    @Test
+    void shouldNotCountTriggerTermsInsideOtherWords() {
+
+        Long patId = 1L;
+
+        PatientDTO patient = new PatientDTO();
+        patient.setBirth(LocalDate.of(1980, 1, 1));
+        patient.setGender("M");
+
+        NoteDTO note = createNote(
+                "Le patient présente un surpoids et une réactionnaire attitude."
+        );
+
+        doReturn(patient)
+                .when(assessmentService)
+                .getPatient(patId);
+
+        doReturn(List.of(note))
+                .when(assessmentService)
+                .getNotesByPatientId(patId);
+
+        Assessment result = assessmentService.assessPatient(patId);
+
+        assertEquals(RiskLevel.NONE, result.getRisk());
+    }
 }
