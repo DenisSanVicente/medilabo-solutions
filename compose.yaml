@@ -18,6 +18,19 @@ services:
       retries: 10
       start_period: 120s
 
+      mongodb:
+        image: mongo:7
+        ports:
+          - "27018:27017"
+        volumes:
+          - mongo-data:/data/db
+        healthcheck:
+          test: [ "CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok" ]
+          interval: 10s
+          timeout: 5s
+          retries: 10
+          start_period: 30s
+
   patient-service:
     build:
       context: ./patient-service
@@ -31,15 +44,41 @@ services:
       mysql:
         condition: service_healthy
 
+  note-service:
+    build:
+      context: ./note-service
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/medilabo_notes
+    ports:
+      - "8083:8083"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
   gateway-service:
     build:
       context: ./gateway-service
     environment:
       PATIENT_SERVICE_URL: http://patient-service:8082
+      NOTE_SERVICE_URL: http://note-service:8083
+      ASSESSMENT_SERVICE_URL: http://assessment-service:8084
+
+      PATIENT_SERVICE_USERNAME: user
+      PATIENT_SERVICE_PASSWORD: password
+
+      NOTE_SERVICE_USERNAME: user
+      NOTE_SERVICE_PASSWORD: password
+
+      ASSESSMENT_SERVICE_USERNAME: user
+      ASSESSMENT_SERVICE_PASSWORD: password
+
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - "8080:8080"
     depends_on:
       - patient-service
+      - note-service
+      - assessment-service
 
   front-service:
     build:
@@ -51,5 +90,20 @@ services:
     depends_on:
       - gateway-service
 
+  assessment-service:
+    build:
+      context: ./assessment-service
+    environment:
+      PATIENT_SERVICE_URL: http://patient-service:8082
+      NOTE_SERVICE_URL: http://note-service:8083
+      SERVICE_USERNAME: user
+      SERVICE_PASSWORD: password
+    ports:
+      - "8084:8084"
+    depends_on:
+      - patient-service
+      - note-service
+
 volumes:
   mysql-data:
+  mongo-data:

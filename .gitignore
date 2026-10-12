@@ -2,3 +2,6 @@
 *.iml
 target/
 .DS_Store
+
+# Variables d'environnement et secrets
+.env
