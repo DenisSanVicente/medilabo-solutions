@@ -8,6 +8,16 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service métier chargé de la gestion des patients.
+ *
+ * Il assure les opérations de consultation, de création
+ * et de modification des données des patients en s'appuyant
+ * sur PatientRepository pour les accès à la base de données.
+ *
+ * Une exception PatientNotFoundException est levée lorsqu'un
+ * patient recherché ou à modifier n'existe pas.
+ */
 @Service
 public class PatientService {
 
@@ -31,6 +41,20 @@ public class PatientService {
     public Patient addPatient(Patient patient) {
         return patientRepository.save(patient);
     }
+
+
+    /**
+     * Met à jour les informations d'un patient existant.
+     *
+     * Recherche le patient à partir de son identifiant, puis
+     * remplace ses informations par celles fournies avant
+     * d'enregistrer les modifications en base de données.
+     *
+     * @param id identifiant du patient à modifier
+     * @param patient nouvelles informations du patient
+     * @return le patient après enregistrement des modifications
+     * @throws PatientNotFoundException si le patient n'existe pas
+     */
 
     public Patient updatePatient(Long id, Patient patient) {
 

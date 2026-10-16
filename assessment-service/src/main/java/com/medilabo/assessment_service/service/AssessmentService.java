@@ -15,12 +15,36 @@ import java.time.Period;
 import java.util.List;
 import java.util.regex.Pattern;
 
+
+/**
+ * Service métier responsable de l'évaluation du risque de diabète
+ * de type 2 chez les patients.
+ *
+ * Il récupère les informations du patient et ses notes médicales
+ * auprès des microservices correspondants, puis analyse les termes
+ * déclencheurs présents dans les notes.
+ *
+ * Le niveau de risque est déterminé selon l'âge, le sexe
+ * et le nombre de termes déclencheurs identifiés.
+ *
+ * Quatre niveaux de risque sont possibles :
+ * NONE, BORDERLINE, IN_DANGER et EARLY_ONSET.
+ */
 @Service
 public class AssessmentService {
 
     private final RestClient patientRestClient;
     private final RestClient noteRestClient;
 
+
+    /**
+     * Motifs de recherche correspondant aux termes déclencheurs
+     * utilisés pour évaluer le risque de diabète.
+     *
+     * Les expressions régulières permettent de reconnaître
+     * certaines variantes grammaticales des termes médicaux.
+     * La recherche s'effectue sur des textes préalablement normalisés.
+     */
     private static final List<String> TRIGGER_PATTERNS = List.of(
             "hemoglobine a1c",
             "microalbumine",
@@ -52,6 +76,13 @@ public class AssessmentService {
                 .build();
     }
 
+
+    /**
+     * Récupère les informations d'un patient depuis le microservice Patient.
+     *
+     * @param patId identifiant du patient
+     * @return les informations du patient sous forme de DTO
+     */
     public PatientDTO getPatient(Long patId) {
         return patientRestClient.get()
                 .uri("/patients/{id}", patId)
@@ -59,6 +90,14 @@ public class AssessmentService {
                 .body(PatientDTO.class);
     }
 
+
+    /**
+     * Récupère les notes médicales associées à un patient
+     * depuis le microservice Note.
+     *
+     * @param patId identifiant du patient
+     * @return la liste des notes médicales du patient
+     */
     public List<NoteDTO> getNotesByPatientId(Long patId) {
         return noteRestClient.get()
                 .uri("/notes/patient/{patId}", patId)
@@ -66,6 +105,17 @@ public class AssessmentService {
                 .body(new ParameterizedTypeReference<List<NoteDTO>>() {});
     }
 
+
+    /**
+     * Compte les occurrences des catégories de termes déclencheurs
+     * présentes dans les notes médicales.
+     *
+     * Chaque motif est comptabilisé au maximum une fois par note,
+     * même si le terme apparaît plusieurs fois dans celle-ci.
+     *
+     * @param notes liste des notes médicales à analyser
+     * @return le nombre total de motifs détectés
+     */
     private int countTriggerTerms(List<NoteDTO> notes) {
 
         int triggerTermsCount = 0;
@@ -93,6 +143,18 @@ public class AssessmentService {
         return triggerTermsCount;
     }
 
+
+    /**
+     * Normalise un texte pour faciliter la détection
+     * des termes déclencheurs.
+     *
+     * Supprime les accents et convertit le texte en minuscules
+     * afin de rendre la recherche insensible à la casse
+     * et aux variations d'accentuation.
+     *
+     * @param text texte à normaliser
+     * @return le texte normalisé
+     */
     private String normalize(String text) {
 
         String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
@@ -102,11 +164,32 @@ public class AssessmentService {
                 .toLowerCase(java.util.Locale.ROOT);
     }
 
+
+    /**
+     * Calcule l'âge du patient en années révolues
+     * à partir de sa date de naissance.
+     *
+     * @param birth date de naissance du patient
+     * @return l'âge du patient en années
+     */
     private int calculateAge(LocalDate birth) {
 
         return Period.between(birth, LocalDate.now()).getYears();
     }
 
+
+    /**
+     * Détermine le niveau de risque de diabète selon les règles métier.
+     *
+     * Pour les patients de moins de 30 ans, les seuils varient
+     * selon le sexe. À partir de 30 ans, les mêmes seuils
+     * sont appliqués aux hommes et aux femmes.
+     *
+     * @param age âge du patient
+     * @param gender sexe du patient (M ou F)
+     * @param triggerTermsCount nombre de termes déclencheurs détectés
+     * @return le nom du niveau de risque calculé
+     */
     private String determineRiskLevel(int age, String gender, int triggerTermsCount) {
 
         if (age < 30) {
@@ -145,6 +228,18 @@ public class AssessmentService {
         return RiskLevel.NONE.name();
     }
 
+
+    /**
+     * Réalise l'évaluation complète du risque de diabète d'un patient.
+     *
+     * Récupère les données du patient et ses notes médicales,
+     * calcule son âge, compte les termes déclencheurs
+     * et détermine le niveau de risque correspondant.
+     *
+     * @param patId identifiant du patient à évaluer
+     * @return l'évaluation contenant l'identifiant du patient
+     *         et son niveau de risque
+     */
     public Assessment assessPatient(Long patId) {
 
         PatientDTO patient = getPatient(patId);

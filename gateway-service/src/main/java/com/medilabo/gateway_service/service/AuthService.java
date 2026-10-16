@@ -16,6 +16,18 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 
+/**
+ * Service chargé de l'authentification et de la génération des JWT.
+ *
+ * Il vérifie les identifiants à l'aide du mécanisme
+ * d'authentification de Spring Security.
+ *
+ * Après une authentification réussie, il génère un JWT signé
+ * avec l'algorithme HS256 et valable pendant une heure.
+ *
+ * Ce jeton permet d'authentifier les requêtes adressées
+ * aux routes protégées du Gateway.
+ */
 @RequiredArgsConstructor
 @Service
 public class AuthService {
@@ -23,6 +35,20 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtEncoder jwtEncoder;
 
+
+    /**
+     * Authentifie un utilisateur et génère un JWT.
+     *
+     * Les identifiants sont vérifiés par AuthenticationManager.
+     * Si l'authentification réussit, un jeton signé est créé
+     * avec l'identité de l'utilisateur et une durée de validité
+     * d'une heure.
+     *
+     * @param loginRequest identifiants de connexion
+     * @return le JWT généré après authentification
+     * @throws org.springframework.security.core.AuthenticationException
+     *         si les identifiants sont invalides
+     */
     public String login(LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(

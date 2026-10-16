@@ -4,6 +4,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+
+/**
+ * Service chargé de l'authentification technique du frontend
+ * auprès du Gateway.
+ *
+ * Il utilise les identifiants configurés dans l'application
+ * pour demander un JWT via le point d'entrée /auth/login.
+ *
+ * Le jeton obtenu permet au frontend d'effectuer des requêtes
+ * authentifiées vers les API exposées par le Gateway.
+ */
 @Service
 public class GatewayTokenService {
 
@@ -24,6 +35,16 @@ public class GatewayTokenService {
         this.password = password;
     }
 
+
+    /**
+     * Demande un JWT au Gateway à partir des identifiants configurés.
+     *
+     * Envoie une requête HTTP POST vers /auth/login et récupère
+     * le jeton retourné après authentification.
+     *
+     * @return le JWT permettant d'authentifier les appels aux API
+     * @throws IllegalStateException si la réponse ne contient aucun jeton
+     */
     public String getToken() {
 
         LoginRequest request = new LoginRequest(username, password);
