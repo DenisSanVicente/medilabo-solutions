@@ -67,6 +67,9 @@ L'application est organisée autour de cinq microservices Spring Boot.
 | `note-service` | 8083 | Gestion des notes médicales |
 | `assessment-service` | 8084 | Calcul du risque de diabète |
 
+<img width="866" height="1326" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/74aa7200-63b5-46d2-92e4-1f4daf8b6663" />
+
+
 ### Bases de données
 
 Deux bases de données sont utilisées :
@@ -167,7 +170,7 @@ Il n'est donc pas nécessaire de les installer directement sur l'ordinateur.
 ### 1. Cloner le dépôt
 
 ```bash
-git clone <https://github.com/DenisSanVicente/medilabo-solutions/tree/dev>
+git clone https://github.com/DenisSanVicente/medilabo-solutions.git
 cd medilabo-solutions
 ```
 
@@ -435,7 +438,7 @@ Plusieurs améliorations pourraient être apportées à l'application :
 
 ## Contexte du projet
 
-Medilabo Solutions a été développé dans le cadre du projet 9 de la formation Java d'OpenClassrooms.
+Medilabo Solutions a été développé dans le cadre du projet final de la formation de Concepteur Développeur d'applications Java d'OpenClassrooms, sanctionnée par l'obtention d'un titre RNCP de niveau 6 en 2026.
 
 Ce projet a permis de mettre en pratique :
 
@@ -451,4 +454,4 @@ Ce projet a permis de mettre en pratique :
 
 ## Auteur
 
-Projet réalisé par **Denis San Vicente** dans le cadre de sa formation de développeur Java.
+Projet réalisé par Denis San Vicente dans le cadre de sa formation diplômante en développement Java chez OpenClassrooms.
